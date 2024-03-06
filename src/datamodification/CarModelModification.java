@@ -2,6 +2,7 @@ package datamodification;
 
 import mysqlconnection.MySqlConnection;
 import tables.CarModel;
+import ui.SystemMessages;
 import ui.UI;
 
 import java.sql.*;
@@ -25,10 +26,10 @@ public class CarModelModification {
     }
 
     private CarModel userTypesCarModel() {
-        System.out.print("Brand: ");
+        SystemMessages.printYellowText("Brand: ");
         String brand = UI.promptString();
 
-        System.out.print("Model: ");
+        SystemMessages.printYellowText("Model: ");
         String model = UI.promptString();
 
         return new CarModel(brand, model);
