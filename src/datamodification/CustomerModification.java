@@ -1,7 +1,9 @@
 package datamodification;
 
 import infoprinter.InfoPrinter;
+import menu.inputcriteria.InputCriteria;
 import mysqlconnection.MySqlConnection;
+import ui.SystemMessages;
 import ui.UI;
 import tables.Customer;
 
@@ -43,8 +45,7 @@ public class CustomerModification {
             preparedStatement.setDate(9, Date.valueOf(customer.getIssueDate()));
 
             preparedStatement.executeUpdate();
-
-            System.out.println("Customer added successfully");
+            SystemMessages.printSuccess("Customer added successfully!");
         } catch (SQLException e) {
             e.getStackTrace();
         }
@@ -128,7 +129,10 @@ public class CustomerModification {
         }
     }
 
+    // Prompt user for customer information
     private Customer userTypesCustomer() {
+        InputCriteria inputCriteria = new InputCriteria();
+
         System.out.println("CREATE CUSTOMER");
         System.out.print("First Name: ");
         String firstName = UI.promptString();
@@ -140,7 +144,7 @@ public class CustomerModification {
         String address = UI.promptString();
 
         System.out.print("Postal Code: ");
-        int postalCode = UI.promptInt();
+        int postalCode = inputCriteria.checkIfUserInputIsInt(1, 4);
         UI.promptString();
 
         System.out.print("Mobile Phone: ");
