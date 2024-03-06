@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS customer (
   address					VARCHAR(255)	NOT NULL,
   postal_code     			INT				NOT NULL	REFERENCES postal_code(postal_code), 
   mobile_phone   			VARCHAR(12)		NOT NULL, 
-  phone_number   			VARCHAR(12), 
+  phone_number   			VARCHAR(12)		DEFAULT NULL,
   email          			VARCHAR(60)		NOT NULL, 
   license_number 			VARCHAR(20)		NOT NULL, 
   issue_date     			DATE			NOT NULL
