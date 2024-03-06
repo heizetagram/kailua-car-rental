@@ -1,10 +1,12 @@
 package datamodification;
 
+import menu.MenuOption;
 import mysqlconnection.MySqlConnection;
 import tables.Car;
 import tables.CarModel;
 import tables.CarType;
 import tables.FuelType;
+import ui.SystemMessages;
 import ui.UI;
 
 import java.sql.*;
@@ -53,27 +55,6 @@ public class CarModification {
             e.printStackTrace();
         }
     }
-    public CarModel getCarModelByBrandAndModel(String brand, String model) {
-        String query = "SELECT * FROM car_model WHERE brand = ? AND model = ?";
-        CarModel carModel = null;
-
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-            pstmt.setString(1, brand);
-            pstmt.setString(2, model);
-
-            ResultSet rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-                int modelId = rs.getInt("model_id");
-                carModel = new CarModel(modelId, brand, model);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return carModel;
-    }
 
     public CarType getCarTypeByName(String typeName) {
         String query = "SELECT * FROM car_type WHERE car_type_name = ?";
@@ -95,31 +76,37 @@ public class CarModification {
         return carType;
     }
 
+    // Create car
     public void createCar() {
         Car car = userTypesCar();
         insertCarIntoDatabase(car);
     }
 
+    // Prompt user for car information
     private Car userTypesCar() {
         CarModelModification carModelModification = new CarModelModification(mySqlConnection);
-        System.out.println("CREATE CAR");
+        MenuOption menuOption = new MenuOption();
+        SystemMessages.printYellowBoldText("CREATE CAR\n");
         CarModel carModel = carModelModification.createCarModel();
 
-        System.out.print("Fuel Type: ");
-        FuelType fuelType = FuelType.valueOf(UI.promptString());
 
-        System.out.print("Car Type: ");
-        CarType carType = CarType.valueOfIgnoreCase(UI.promptString());
+        SystemMessages.printYellowText("Fuel Type: ");
+        menuOption.showFuelTypeOptions();
+        FuelType fuelType = menuOption.chooseFuelType();
 
-        System.out.print("Registration Number: ");
+        SystemMessages.printYellowText("Car Type: ");
+        menuOption.showCarTypeOptions();
+        CarType carType = menuOption.chooseCarType();
+
+        SystemMessages.printYellowText("Registration Number: ");
         String registrationNumber = UI.promptString();
 
-        System.out.print("First Registration Date: ");
+        SystemMessages.printYellowText("First Registration Date (DD-MM-YYYY): ");
         String dateString = UI.promptString();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         LocalDate firstRegistrationDate = LocalDate.parse(dateString, formatter);
 
-        System.out.print("Mileage: ");
+        SystemMessages.printYellowText("Mileage: ");
         int mileage = UI.promptInt();
         UI.promptString(); // Scanner bug
 
