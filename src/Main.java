@@ -1,6 +1,6 @@
 
-import datamodification.CarModification;
-import datamodification.CustomerModification;
+import mysqlconnection.datamodification.CarModification;
+import mysqlconnection.datamodification.CustomerModification;
 import mysqlconnection.MySqlConnection;
 
 import java.util.Scanner;
@@ -29,21 +29,21 @@ public class Main {
     private void run() {
         Scanner scanner = new Scanner(System.in);
         int choice;
-
         do {
-            displayMenu();
+            displayMainMenu();
             System.out.print("Enter your choice (1-4): ");
             choice = scanner.nextInt();
             scanner.nextLine();
 
             switch (choice) {
                 case 1:
-                    carModification.createCar();
+                    carSubMenu();
                     break;
                 case 2:
-                    deleteCar();
+                    customerSubMenu();
                     break;
                 case 3:
+                    // mangler logic
                     break;
                 case 4:
                     System.out.println("Exiting the program. Goodbye!");
