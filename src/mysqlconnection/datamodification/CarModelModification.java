@@ -1,7 +1,7 @@
-package datamodification;
+package mysqlconnection.datamodification;
 
 import mysqlconnection.MySqlConnection;
-import tables.CarModel;
+import mysqlconnection.tables.CarModel;
 import ui.SystemMessages;
 import ui.UI;
 
@@ -42,9 +42,24 @@ public class CarModelModification {
             pstmt.setString(1, carModel.getBrand());
             pstmt.setString(2, carModel.getModel());
             pstmt.executeUpdate();
+            System.out.println(carModel.getModelId() + ",  " + carModel.getModel() + ", " + carModel.getBrand());
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private CarModel getCarModelByBrandAndName(String brand, String model) {
+        String query = "SELECT * FROM car_model WHERE brand = '" + brand + "' AND model = '" + model +"';";
+        CarModel carModel  = null;
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            if (rs.next()) {
+                carModel = getCarModel(rs);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return carModel;
     }
 
     /*
@@ -73,7 +88,7 @@ public class CarModelModification {
             // Checks if brand/model already exists
             if (!rs.next()) {
                 insertCarModelIntoDatabase(carModel);
-                updatedCarModel = carModel;
+                updatedCarModel = getCarModelByBrandAndName(carModel.getBrand(), carModel.getModel());
             } else { // If it already exists, then return the car_model of the result set
                 updatedCarModel = new CarModel(rs.getInt("model_id"), rs.getString("brand"), rs.getString("model"));
             }
@@ -83,4 +98,13 @@ public class CarModelModification {
         return updatedCarModel;
     }
 
+    private CarModel getCarModel(ResultSet rs) {
+        CarModel carModel = null;
+        try {
+            carModel = new CarModel(rs.getInt("model_id"), rs.getString("brand"), rs.getString("model"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return carModel;
+    }
 }
