@@ -1,17 +1,18 @@
-package datamodification;
+package mysqlconnection.datamodification;
 
 import menu.MenuOption;
 import mysqlconnection.MySqlConnection;
-import tables.Car;
-import tables.CarModel;
-import tables.CarType;
-import tables.FuelType;
+import mysqlconnection.tables.Car;
+import mysqlconnection.tables.CarModel;
+import mysqlconnection.tables.CarType;
+import mysqlconnection.tables.FuelType;
 import ui.SystemMessages;
 import ui.UI;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Scanner;
 
 /**
  * @author Freddy
@@ -31,7 +32,7 @@ public class CarModification {
         try {
             String query = "INSERT INTO car (model_id, fuel_type_name, car_type_name, registration_number, first_registration_date, mileage) VALUES (?, ?, ?, ?, ?, ?);";
             PreparedStatement pstmt = connection.prepareStatement(query);
-            pstmt.setInt(1, car.getCarModel().getModelId());
+            pstmt.setInt(1, car.getModelId());
             pstmt.setString(2, car.getFuelType().name());
             pstmt.setString(3, car.getCarType().name());
             pstmt.setString(4, car.getRegistrationNumber());
@@ -44,13 +45,20 @@ public class CarModification {
         }
     }
 
-    public void deleteCar(int carId) {
-        String query = "DELETE FROM car WHERE car_id = ?;";
+    // delete by ID
+    public void deleteCarById(int carId) {
+        String query = "DELETE FROM car WHERE car_id = ?";
 
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-            pstmt.setInt(1, carId);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, carId);
 
-            pstmt.executeUpdate();
+            int deletedRows = preparedStatement.executeUpdate();
+
+            if (deletedRows > 0) {
+                System.out.println("Car deleted successfully.");
+            } else {
+                System.out.println("Car with ID " + carId + " not found.");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -78,6 +86,7 @@ public class CarModification {
 
     // Create car
     public void createCar() {
+        SystemMessages.printYellowBoldText("CREATE CAR\n");
         Car car = userTypesCar();
         insertCarIntoDatabase(car);
     }
@@ -86,9 +95,7 @@ public class CarModification {
     private Car userTypesCar() {
         CarModelModification carModelModification = new CarModelModification(mySqlConnection);
         MenuOption menuOption = new MenuOption();
-        SystemMessages.printYellowBoldText("CREATE CAR\n");
         CarModel carModel = carModelModification.createCarModel();
-
 
         SystemMessages.printYellowText("Fuel Type: ");
         menuOption.showFuelTypeOptions();
@@ -110,6 +117,42 @@ public class CarModification {
         int mileage = UI.promptInt();
         UI.promptString(); // Scanner bug
 
-        return new Car(carModel, fuelType, carType, registrationNumber, firstRegistrationDate, mileage);
+        return new Car(carModel.getModelId(), fuelType, carType, registrationNumber, firstRegistrationDate, mileage);
+    }
+
+
+    public void updateCar() {
+        SystemMessages.printYellowBoldText("UPDATE CAR\n");
+        Scanner in = new Scanner(System.in);
+        System.out.print("Enter car ID to update: ");
+        int carId = in.nextInt();
+        Car updatedCar = userTypesCar();
+
+        updateCarById(carId, updatedCar);
+    }
+
+    public void updateCarById(int carId, Car updatedCar) {
+        String query = "UPDATE car SET model_id = ?, fuel_type_name = ?, car_type_name = ?, registration_number = ?, first_registration_date = ?, mileage = ? WHERE car_id = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, updatedCar.getModelId());
+            preparedStatement.setString(2, updatedCar.getFuelType().name());
+            preparedStatement.setString(3, updatedCar.getCarType().name());
+            preparedStatement.setString(4, updatedCar.getRegistrationNumber());
+            preparedStatement.setDate(5, Date.valueOf(updatedCar.getFirstRegistrationDate()));
+            preparedStatement.setInt(6, updatedCar.getMileage());
+            preparedStatement.setInt(7, carId);
+
+            int updatedRows = preparedStatement.executeUpdate();
+
+            if (updatedRows > 0) {
+                System.out.println("Car updated successfully.");
+            } else {
+                System.out.println("Car with ID " + carId + " not found.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
+
