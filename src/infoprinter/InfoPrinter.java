@@ -1,6 +1,6 @@
 package infoprinter;
 
-import tables.Customer;
+import mysqlconnection.tables.Customer;
 import ui.ConsoleColors;
 
 /**
