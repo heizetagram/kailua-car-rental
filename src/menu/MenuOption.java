@@ -1,8 +1,8 @@
 package menu;
 
 import menu.inputcriteria.InputCriteria;
-import tables.CarType;
-import tables.FuelType;
+import mysqlconnection.tables.CarType;
+import mysqlconnection.tables.FuelType;
 import ui.SystemMessages;
 
 /**
