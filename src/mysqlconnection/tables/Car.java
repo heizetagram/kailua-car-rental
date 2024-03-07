@@ -1,4 +1,4 @@
-package tables;
+package mysqlconnection.tables;
 
 import java.time.LocalDate;
 
@@ -8,17 +8,17 @@ import java.time.LocalDate;
 
 public class Car {
     private int carId;
-    private CarModel carModel;
+    private int modelId;
     private CarType carType;
     private FuelType fuelType;
     private String registrationNumber;
     private LocalDate firstRegistrationDate;
     private int mileage;
 
-    public Car(int carId, CarModel carModel, FuelType fuelType, CarType carType, String registrationNumber,
+    public Car(int carId, int modelId, FuelType fuelType, CarType carType, String registrationNumber,
                LocalDate firstRegistrationDate, int mileage) {
         this.carId = carId;
-        this.carModel = carModel;
+        this.modelId = modelId;
         this.carType = carType;
         this.fuelType = fuelType;
         this.registrationNumber = registrationNumber;
@@ -26,9 +26,9 @@ public class Car {
         this.mileage = mileage;
     }
 
-    public Car(CarModel carModel, FuelType fuelType, CarType carType, String registrationNumber,
+    public Car(int modelId, FuelType fuelType, CarType carType, String registrationNumber,
                LocalDate firstRegistrationDate, int mileage) {
-        this.carModel = carModel;
+        this.modelId = modelId;
         this.fuelType = fuelType;
         this.carType = carType;
         this.registrationNumber = registrationNumber;
@@ -41,8 +41,8 @@ public class Car {
         return carId;
     }
 
-    public CarModel getCarModel() {
-        return carModel;
+    public int getModelId() {
+        return modelId;
     }
 
     public CarType getCarType() {
@@ -69,8 +69,8 @@ public class Car {
         this.carId = carId;
     }
 
-    public void setCarModel(CarModel carModel) {
-        this.carModel = carModel;
+    public void setModelId(int ModelId) {
+        this.modelId = modelId;
     }
 
     public void setCarType(CarType carType) {
@@ -97,7 +97,7 @@ public class Car {
     public String toString() {
         return "Car{" +
                 "carId=" + carId +
-                ", carModel=" + carModel +
+                ", carModelId=" + modelId +
                 ", carType=" + carType +
                 ", fuelType=" + fuelType +
                 ", registrationNumber='" + registrationNumber + '\'' +
