@@ -1,11 +1,11 @@
-package datamodification;
+package mysqlconnection.datamodification;
 
 import infoprinter.InfoPrinter;
 import menu.inputcriteria.InputCriteria;
 import mysqlconnection.MySqlConnection;
 import ui.SystemMessages;
 import ui.UI;
-import tables.Customer;
+import mysqlconnection.tables.Customer;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -25,8 +25,16 @@ public class CustomerModification {
 
     // Create customer by given criteria
     public void createCustomer() {
+        SystemMessages.printYellowBoldText("CREATE CUSTOMER\n");
         Customer customer = userTypesCustomer();
         insertCustomerToDatabase(customer);
+    }
+
+    public void editCustomer() {
+        SystemMessages.printYellowBoldText("EDIT CUSTOMER\n");
+        String firstName = UI.promptString();
+        String lastName = UI.promptString();
+        editCustomerByFullName(firstName, lastName);
     }
 
     // Add customer
@@ -75,10 +83,40 @@ public class CustomerModification {
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)){
             int foundCustomer = preparedStatement.executeUpdate();
-            if (foundCustomer == 1) {
-                System.out.println("Customer deleted");
+            if (foundCustomer > 0) {
+                SystemMessages.printSuccess("Customer successfully deleted\n");
             } else {
-                System.out.println("Could not find customer");
+                SystemMessages.printError("Customer with ID: " + customerId + " could not be found");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Edit customer by full name
+    private void editCustomerByFullName(String firstName, String lastName) {
+        int customerId = findCustomerIdByFullName(firstName, lastName);
+        Customer customer = getCustomerById(customerId);
+        UI.promptString(); // Scanner bug
+        Customer updatedCustomer = userTypesCustomer();
+
+        String query = "UPDATE customer SET first_name =  ?, last_name = ?, address = ?, postal_code = ?, mobile_phone = ?, phone_number = ?, email = ?, license_number = ?, issue_date = ? WHERE customer_id = ?;";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, updatedCustomer.getLastName());
+            preparedStatement.setString(2, updatedCustomer.getAddress());
+            preparedStatement.setInt(3, updatedCustomer.getPostalCode());
+            preparedStatement.setString(4, updatedCustomer.getMobilePhone());
+            preparedStatement.setString(5, updatedCustomer.getPhoneNumber());
+            preparedStatement.setString(6, updatedCustomer.getEmail());
+            preparedStatement.setString(7, updatedCustomer.getLicense_number());
+            preparedStatement.setDate(8, Date.valueOf(updatedCustomer.getIssueDate()));
+            preparedStatement.setInt(9, customerId);
+            int foundCustomer = preparedStatement.executeUpdate();
+
+            if (foundCustomer > 0) {
+                SystemMessages.printSuccess("Customer successfully edited\n");
+            } else {
+                SystemMessages.printError("Customer with ID: " + customerId + " could not be found");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -133,33 +171,32 @@ public class CustomerModification {
     private Customer userTypesCustomer() {
         InputCriteria inputCriteria = new InputCriteria();
 
-        System.out.println("CREATE CUSTOMER");
-        System.out.print("First Name: ");
+        SystemMessages.printYellowText("First Name: ");
         String firstName = UI.promptString();
 
-        System.out.print("Last Name: ");
+        SystemMessages.printYellowText("Last Name: ");
         String lastName = UI.promptString();
 
-        System.out.print("Address: ");
+        SystemMessages.printYellowText("Address: ");
         String address = UI.promptString();
 
-        System.out.print("Postal Code: ");
-        int postalCode = inputCriteria.checkIfUserInputIsInt(1, 4);
+        SystemMessages.printYellowText("Postal Code: ");
+        int postalCode = UI.promptInt();
         UI.promptString();
 
-        System.out.print("Mobile Phone: ");
+        SystemMessages.printYellowText("Mobile Phone: ");
         String mobilePhone = UI.promptString();
 
-        System.out.print("Phone Number: ");
+        SystemMessages.printYellowText("Phone Number: ");
         String phoneNumber = UI.promptString();
 
-        System.out.print("E-mail: ");
+        SystemMessages.printYellowText("E-mail: ");
         String email = UI.promptString();
 
-        System.out.print("License Number: ");
+        SystemMessages.printYellowText("License Number: ");
         String licenseNumber = UI.promptString();
 
-        System.out.print("Issue Date (dd-MM-yyyy): ");
+        SystemMessages.printYellowText("Issue Date (dd-MM-yyyy): ");
         String issueDateString = UI.promptString();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         LocalDate issueDate = LocalDate.parse(issueDateString, formatter);
