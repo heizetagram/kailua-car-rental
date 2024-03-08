@@ -60,13 +60,13 @@ public class CustomerModification {
     }
 
     // Get customer by customer_id
-    public Customer getCustomerById(int customerId) {
+    private Customer getCustomerById(int customerId) {
         String query = "SELECT * FROM customer WHERE customer_id = " + customerId + ";";
         Customer customer = null;
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(query)){
             if (rs.getInt("customer_id") == customerId) {
-                customer = getCustomer(rs);
+                customer = getCustomerFromRs(rs);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -88,7 +88,7 @@ public class CustomerModification {
                 printErrorFindingCustomerId(customerId);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            SystemMessages.printError("Customer is part of a rental contract and cannot be deleted!\n");
         }
     }
 
@@ -131,7 +131,7 @@ public class CustomerModification {
             pstmt.setString(5, customer.getMobilePhone());
             pstmt.setString(6, customer.getPhoneNumber());
             pstmt.setString(7, customer.getEmail());
-            pstmt.setString(8, customer.getLicense_number());
+            pstmt.setString(8, customer.getLicenseNumber());
             pstmt.setDate(9, Date.valueOf(customer.getIssueDate()));
         } catch (SQLException e) {
             e.printStackTrace();
@@ -146,7 +146,7 @@ public class CustomerModification {
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(query)){
             while (rs.next()) {
-                customersWithGivenName.add(getCustomer(rs));
+                customersWithGivenName.add(getCustomerFromRs(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -196,7 +196,7 @@ public class CustomerModification {
         String address = UI.promptString();
 
         //Postal code
-        PostalCode postalCode = postalCodeModification.createPostalCode();
+        PostalCode postalCode = postalCodeModification.getPostalCodeAndCreate();
 
         SystemMessages.printYellowText("Mobile Phone: ");
         String mobilePhone = UI.promptString();
@@ -218,7 +218,7 @@ public class CustomerModification {
     }
 
     // Get customer
-    private Customer getCustomer(ResultSet rs) {
+    private Customer getCustomerFromRs(ResultSet rs) {
         Customer customer = null;
         try {
             customer = new Customer(rs.getInt("customer_id"), rs.getString("first_name"), rs.getString("last_name"), rs.getString("address"), rs.getInt("postal_code"), rs.getString("mobile_phone"), rs.getString("phone_number"), rs.getString("email"), rs.getString("license_number"), rs.getDate("issue_date").toLocalDate());

@@ -2,12 +2,9 @@ package mysqlconnection.datamodification;
 
 import infoprinter.InfoPrinter;
 import mysqlconnection.MySqlConnection;
-import mysqlconnection.tables.CarType;
-import mysqlconnection.tables.FuelType;
 import mysqlconnection.tables.customtables.CarWithCarModel;
 import mysqlconnection.tables.customtables.CustomerWithCity;
 import mysqlconnection.tables.customtables.RentalWithFullInfo;
-import ui.SystemMessages;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -55,13 +52,14 @@ public class DisplayModification {
 
     // Get cars with car models
     private ArrayList<CarWithCarModel> getCarsWithCarModels() {
+        CarModification carModification = new CarModification(mySqlConnection);
         String query = "SELECT c.*, cm.brand, cm.model FROM car c JOIN car_model cm USING (model_id) ORDER BY cm.brand;";
         ArrayList<CarWithCarModel> carsAndCarModels = new ArrayList<>();
 
         try (PreparedStatement pstmt = connection.prepareStatement(query);
              ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
-                carsAndCarModels.add(getCarWithCarModel(rs));
+                carsAndCarModels.add(carModification.getCarWithCarModelFromRs(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -77,7 +75,7 @@ public class DisplayModification {
         try (PreparedStatement pstmt = connection.prepareStatement(query);
              ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
-                customersWithCity.add(getCustomerWithCity(rs));
+                customersWithCity.add(getCustomerWithCityFromRs(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -95,7 +93,7 @@ public class DisplayModification {
         try (PreparedStatement pstmt = connection.prepareStatement(query);
              ResultSet rs = pstmt.executeQuery()){
             while (rs.next()) {
-                rentalsWithFullInfo.add(rentalModification.getRentalFullInfo(rs));
+                rentalsWithFullInfo.add(rentalModification.getRentalWithFullInfo(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -106,19 +104,8 @@ public class DisplayModification {
 
     //////////////////////////////////
 
-    // Get car with car model
-    private CarWithCarModel getCarWithCarModel(ResultSet rs) {
-        CarWithCarModel fullCar = null;
-        try {
-            fullCar = new CarWithCarModel(rs.getInt("car_id"), rs.getInt("model_id"), FuelType.valueOf(rs.getString("fuel_type_name")), CarType.valueOf(rs.getString("car_type_name")), rs.getString("registration_number"), rs.getDate("first_registration_date").toLocalDate(), rs.getInt("mileage"), rs.getString("brand"), rs.getString("model"));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return fullCar;
-    }
-
     // Get customer with city
-    private CustomerWithCity getCustomerWithCity(ResultSet rs) {
+    private CustomerWithCity getCustomerWithCityFromRs(ResultSet rs) {
         CustomerWithCity customerWithCity = null;
         try {
             customerWithCity = new CustomerWithCity(rs.getInt("customer_id"), rs.getString("first_name"), rs.getString("last_name"), rs.getString("address"), rs.getInt("postal_code"), rs.getString("city"), rs.getString("mobile_phone"), rs.getString("phone_number"), rs.getString("email"), rs.getString("license_number"), rs.getDate("issue_date").toLocalDate());

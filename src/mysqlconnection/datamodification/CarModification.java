@@ -52,7 +52,6 @@ public class CarModification {
         Scanner in = new Scanner(System.in);
         System.out.print("Enter car ID to delete: ");
         int carId = in.nextInt();
-
         deleteCarById(carId);
     }
 
@@ -84,7 +83,7 @@ public class CarModification {
                 System.out.println("Car with ID " + carId + " not found.");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            SystemMessages.printError("Car is part of a rental contract and cannot be deleted!\n");
         }
     }
 
@@ -118,7 +117,7 @@ public class CarModification {
     }
 
     // Update car by ID
-    public void updateCarById(int carId, Car updatedCar) {
+    private void updateCarById(int carId, Car updatedCar) {
         String query = "UPDATE car SET model_id = ?, fuel_type_name = ?, car_type_name = ?, registration_number = ?, first_registration_date = ?, mileage = ? WHERE car_id = ?";
 
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
@@ -160,7 +159,7 @@ public class CarModification {
 
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
-                carsByType.add(getCarWithCarModel(rs));
+                carsByType.add(getCarWithCarModelFromRs(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -168,19 +167,8 @@ public class CarModification {
         return carsByType;
     }
 
-    // Get car
-    private Car getCar(ResultSet rs) {
-        Car car = null;
-        try {
-            car = new Car(rs.getInt("car_id"), rs.getInt("model_id"), FuelType.valueOf(rs.getString("fuel_type_name")), CarType.valueOf(rs.getString("car_type_name")), rs.getString("registration_number"), rs.getDate("first_registration_date").toLocalDate(), rs.getInt("mileage"));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return car;
-    }
-
     // Get car and car model
-    private CarWithCarModel getCarWithCarModel(ResultSet rs) {
+    public CarWithCarModel getCarWithCarModelFromRs(ResultSet rs) {
         CarWithCarModel fullCar = null;
         try {
             fullCar = new CarWithCarModel(rs.getInt("car_id"), rs.getInt("model_id"), FuelType.valueOf(rs.getString("fuel_type_name")), CarType.valueOf(rs.getString("car_type_name")), rs.getString("registration_number"), rs.getDate("first_registration_date").toLocalDate(), rs.getInt("mileage"), rs.getString("brand"), rs.getString("model"));

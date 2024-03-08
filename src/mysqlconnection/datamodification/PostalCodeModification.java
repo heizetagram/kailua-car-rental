@@ -14,8 +14,8 @@ public class PostalCodeModification {
         connection = mySqlConnection.getConnection();
     }
 
-    // Create postal code
-    public PostalCode createPostalCode() {
+    // Get postal code number and create it if it doesn't exist
+    public PostalCode getPostalCodeAndCreate() {
         PostalCode postalCode = userTypesPostalCode();
         return checkIfPostalCodeExists(postalCode);
     }

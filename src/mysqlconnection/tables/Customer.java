@@ -15,10 +15,10 @@ public class Customer {
     private String mobilePhone;
     private String phoneNumber;
     private String email;
-    private String license_number;
+    private String licenseNumber;
     private LocalDate issueDate;
 
-    public Customer(int customerId, String firstName, String lastName, String address, int postalCode, String mobilePhone, String phoneNumber, String email, String license_number, LocalDate issueDate) {
+    public Customer(int customerId, String firstName, String lastName, String address, int postalCode, String mobilePhone, String phoneNumber, String email, String licenseNumber, LocalDate issueDate) {
         this.customerId = customerId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -27,11 +27,11 @@ public class Customer {
         this.mobilePhone = mobilePhone;
         this.phoneNumber = phoneNumber;
         this.email = email;
-        this.license_number = license_number;
+        this.licenseNumber = licenseNumber;
         this.issueDate = issueDate;
     }
 
-    public Customer(String firstName, String lastName, String address, int postalCode, String mobilePhone, String phoneNumber, String email, String license_number, LocalDate issueDate) {
+    public Customer(String firstName, String lastName, String address, int postalCode, String mobilePhone, String phoneNumber, String email, String licenseNumber, LocalDate issueDate) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
@@ -39,7 +39,7 @@ public class Customer {
         this.mobilePhone = mobilePhone;
         this.phoneNumber = phoneNumber;
         this.email = email;
-        this.license_number = license_number;
+        this.licenseNumber = licenseNumber;
         this.issueDate = issueDate;
     }
 
@@ -76,8 +76,8 @@ public class Customer {
         return email;
     }
 
-    public String getLicense_number() {
-        return license_number;
+    public String getLicenseNumber() {
+        return licenseNumber;
     }
 
     public LocalDate getIssueDate() {

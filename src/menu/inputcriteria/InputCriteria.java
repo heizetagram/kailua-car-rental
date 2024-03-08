@@ -19,7 +19,7 @@ public class InputCriteria {
                 running = false;
             } catch (InputMismatchException e) {
                 SystemMessages.printError("Input must be an integer\n");
-                SystemMessages.tryAgain();
+                SystemMessages.printTryAgain();
                 scan.nextLine(); // Scanner bug
             }
         }
@@ -32,7 +32,7 @@ public class InputCriteria {
         while (userChoice < min || userChoice > max) {
             try {
                 SystemMessages.printError("Input must be between " + min + "-" + max + "\n");
-                SystemMessages.tryAgain();
+                SystemMessages.printTryAgain();
                 userChoice = scan.nextInt();
             } catch (InputMismatchException e) {
                 userChoice = checkIfUserInputIsInt(min, max);

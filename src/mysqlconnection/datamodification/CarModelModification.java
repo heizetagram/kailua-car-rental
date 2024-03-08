@@ -55,7 +55,7 @@ public class CarModelModification {
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
             if (rs.next()) {
-                carModel = getCarModel(rs);
+                carModel = getCarModelFromRs(rs);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -85,7 +85,7 @@ public class CarModelModification {
     }
 
     // Get car model
-    private CarModel getCarModel(ResultSet rs) {
+    private CarModel getCarModelFromRs(ResultSet rs) {
         CarModel carModel = null;
         try {
             carModel = new CarModel(rs.getInt("model_id"), rs.getString("brand"), rs.getString("model"));

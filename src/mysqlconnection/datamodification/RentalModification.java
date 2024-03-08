@@ -213,12 +213,12 @@ public class RentalModification {
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(query)){
             while (rs.next()) {
-                rentalsFullInfoWithGivenCustomer.add(getRentalFullInfo(rs));
+                rentalsFullInfoWithGivenCustomer.add(getRentalWithFullInfo(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return getRentalIdFromRental(rentalsFullInfoWithGivenCustomer);
+        return getRentalIdFromList(rentalsFullInfoWithGivenCustomer);
     }
 
     // Get query from name criteira
@@ -231,7 +231,7 @@ public class RentalModification {
     }
 
     // Check if list is empty and get Rental ID
-    private int getRentalIdFromRental(ArrayList<RentalWithFullInfo> rentalsFullInfo) {
+    private int getRentalIdFromList(ArrayList<RentalWithFullInfo> rentalsFullInfo) {
         if (!rentalsFullInfo.isEmpty()) {
             printRentalsWithFullInfo(rentalsFullInfo);
             SystemMessages.printYellowText("\nSelect Rental ID: ");
@@ -275,26 +275,8 @@ public class RentalModification {
         }
     }
 
-    // Get rentals with full info
-    private ArrayList<RentalWithFullInfo> getRentalsWithFullInfoByCustomerId(int customerId) {
-        String query = "SELECT cstm.first_name, cstm.last_name, cm.brand, cm.model, c.registration_number, r.* FROM rental r JOIN customer cstm USING (customer_id) JOIN car c USING (car_id) JOIN car_model cm USING (model_id) WHERE cstm.customer_id = ?;";
-        ArrayList<RentalWithFullInfo> rentalsWithFullInfo = new ArrayList<>();
-
-        try (PreparedStatement pstmt = connection.prepareStatement(query)){
-            pstmt.setInt(1, customerId);
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                rentalsWithFullInfo.add(getRentalFullInfo(rs));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return rentalsWithFullInfo;
-    }
-
     // Get Rental will full info from a result set
-    public RentalWithFullInfo getRentalFullInfo(ResultSet rs) {
+    public RentalWithFullInfo getRentalWithFullInfo(ResultSet rs) {
         RentalWithFullInfo rentalWithFullInfo = null;
         try {
             rentalWithFullInfo = new RentalWithFullInfo(rs.getInt("rental_id"), rs.getInt("customer_id"), rs.getInt("car_id"), rs.getTimestamp("from_date").toLocalDateTime(), rs.getTimestamp("to_date").toLocalDateTime(), rs.getInt("max_km"), rs.getInt("current_km"), rs.getString("first_name"), rs.getString("last_name"), rs.getString("registration_number"), rs.getString("brand"), rs.getString("model"));
