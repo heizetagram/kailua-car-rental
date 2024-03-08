@@ -9,18 +9,6 @@ import java.util.Scanner;
 public class UI {
     private static final Scanner scan;
 
-    public static void print(String text) {
-        System.out.print(text);
-    }
-
-    public static void println(String text) {
-        System.out.println(text);
-    }
-
-    public static void printf(String text, Object... args) {
-        System.out.printf(text, args);
-    }
-
     public static String promptString() {
         return scan.nextLine();
     }
@@ -31,5 +19,15 @@ public class UI {
 
     static {
         scan = new Scanner(System.in);
+    }
+
+    public static String promptFirstName() {
+        SystemMessages.printYellowText("First name: ");
+        return UI.promptString();
+    }
+
+    public static String promptLastName() {
+        SystemMessages.printYellowText("Last name: ");
+        return UI.promptString();
     }
 }
