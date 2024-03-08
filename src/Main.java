@@ -1,7 +1,12 @@
 
+import menu.Menu;
+import mysqlconnection.datamodification.DisplayModification;
+import system.SystemRunning;
 import mysqlconnection.datamodification.CarModification;
 import mysqlconnection.datamodification.CustomerModification;
 import mysqlconnection.MySqlConnection;
+import mysqlconnection.datamodification.RentalModification;
+import ui.SystemMessages;
 
 import java.util.Scanner;
 
@@ -14,11 +19,16 @@ public class Main {
     private MySqlConnection mySqlConnection;
     private CustomerModification customerModification;
     private CarModification carModification;
+    private RentalModification rentalModification;
+    private DisplayModification displayModification;
 
     public Main() {
         mySqlConnection = new MySqlConnection();
         carModification = new CarModification(mySqlConnection);
         customerModification = new CustomerModification(mySqlConnection);
+        rentalModification = new RentalModification(mySqlConnection);
+        displayModification = new DisplayModification(mySqlConnection);
+        SystemRunning.setRunning(true);
     }
 
     public static void main(String[] args) {
@@ -27,105 +37,38 @@ public class Main {
 
     // Run method
     private void run() {
+        Menu menu = new Menu();
         Scanner scanner = new Scanner(System.in);
         int choice;
         do {
-            displayMainMenu();
-            System.out.print("Enter your choice (1-4): ");
+            menu.displayMainMenu();
+            menu.printEnterChoice(1, 4);
             choice = scanner.nextInt();
             scanner.nextLine();
 
             switch (choice) {
                 case 1:
-                    carSubMenu();
+                    menu.carSubMenu(carModification);
                     break;
                 case 2:
-                    customerSubMenu();
+                    menu.customerSubMenu(customerModification);
                     break;
                 case 3:
-                    // mangler logic
+                    menu.rentalSubMenu(rentalModification);
                     break;
                 case 4:
-                    System.out.println("Exiting the program. Goodbye!");
+                    menu.displayDisplaySubMenu(displayModification);
+                    break;
+                case 5:
+                    SystemMessages.printQuitProgram();
+                    SystemRunning.setRunning(false);
                     break;
                 default:
-                    System.out.println("Invalid choice. Please enter a number between 1 and 4.");
+                    System.out.println("Invalid choice. Please enter a number between 1-4");
             }
 
-        } while (choice != 4);
-
+        } while (SystemRunning.isRunning());
         mySqlConnection.closeConnection();
     }
-
-    private void displayMainMenu() {
-        System.out.println("\nCAR RENTAL SYSTEM MENU");
-        System.out.println("1. Cars");
-        System.out.println("2. Customers");
-        System.out.println("3. Display");
-        System.out.println("4. Quit");
-    }
-
-    private void displayCarMenu() {
-        System.out.println("\nCAR MENU");
-        System.out.println("1. Add a car");
-        System.out.println("2. Update a car");
-        System.out.println("3. Delete a car");
-    }
-
-    private void carSubMenu() {
-        Scanner scanner = new Scanner(System.in);
-        int carChoice;
-
-        do {
-            displayCarMenu();
-            System.out.print("Enter your choice (1-2): ");
-            carChoice = scanner.nextInt();
-            scanner.nextLine();
-
-            switch (carChoice) {
-                case 1:
-                    carModification.createCar();
-                    break;
-                case 2:
-                    carModification.updateCar();
-                case 3:
-                    deleteCar();
-                    break;
-                default:
-                    System.out.println("Invalid choice. Please enter a number between 1 and 2.");
-            }
-
-        } while (carChoice != 2);
-    }
-
-    private void displayCustomerMenu() {
-        System.out.println("\nCUSTOMER MENU");
-        // kunde menu
-    }
-
-    private void customerSubMenu() {
-        Scanner scanner = new Scanner(System.in);
-        int customerChoice;
-
-        do {
-            displayCustomerMenu();
-            System.out.print("Enter your choice (1-2): ");
-            customerChoice = scanner.nextInt();
-            scanner.nextLine();
-
-            // kunde relations
-
-        } while (customerChoice != 2);
-    }
-
-
-    private void deleteCar() {
-        Scanner in = new Scanner(System.in);
-        System.out.print("Enter car ID to delete: ");
-        int carId = in.nextInt();
-
-        carModification.deleteCarById(carId);
-    }
-
 }
 
