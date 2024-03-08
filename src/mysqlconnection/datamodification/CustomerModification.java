@@ -1,8 +1,8 @@
 package mysqlconnection.datamodification;
 
 import infoprinter.InfoPrinter;
-import menu.inputcriteria.InputCriteria;
 import mysqlconnection.MySqlConnection;
+import mysqlconnection.tables.PostalCode;
 import ui.SystemMessages;
 import ui.UI;
 import mysqlconnection.tables.Customer;
@@ -23,37 +23,37 @@ public class CustomerModification {
         connection = mySqlConnection.getConnection();
     }
 
-    // Create customer by given criteria
+    // Create customer
     public void createCustomer() {
-        SystemMessages.printYellowBoldText("CREATE CUSTOMER\n");
+        SystemMessages.printBoldYellowText("\nADD CUSTOMER\n");
         Customer customer = userTypesCustomer();
         insertCustomerToDatabase(customer);
     }
 
-    public void editCustomer() {
-        SystemMessages.printYellowBoldText("EDIT CUSTOMER\n");
-        String firstName = UI.promptString();
-        String lastName = UI.promptString();
+    // Update customer
+    public void updateCustomer() {
+        SystemMessages.printBoldYellowText("\nEDIT CUSTOMER\n");
+        String firstName = UI.promptFirstName();
+        String lastName = UI.promptLastName();
         editCustomerByFullName(firstName, lastName);
     }
 
-    // Add customer
+    // Delete customer
+    public void deleteCustomer() {
+        SystemMessages.printBoldYellowText("\nDELETE CUSTOMER\n");
+        String firstName = UI.promptFirstName();
+        String lastName = UI.promptLastName();
+        deleteCustomerByFullName(firstName, lastName);
+    }
+
+    // Insert customer to database
     private void insertCustomerToDatabase(Customer customer) {
         try {
             String query = "INSERT INTO customer (first_name, last_name, address, postal_code, mobile_phone, phone_number, email, license_number, issue_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, customer.getFirstName());
-            preparedStatement.setString(2, customer.getLastName());
-            preparedStatement.setString(3, customer.getAddress());
-            preparedStatement.setInt(4, customer.getPostalCode());
-            preparedStatement.setString(5, customer.getMobilePhone());
-            preparedStatement.setString(6, customer.getPhoneNumber());
-            preparedStatement.setString(7, customer.getEmail());
-            preparedStatement.setString(8, customer.getLicense_number());
-            preparedStatement.setDate(9, Date.valueOf(customer.getIssueDate()));
-
+            setPreparedStatementData(preparedStatement, customer);
             preparedStatement.executeUpdate();
-            SystemMessages.printSuccess("Customer added successfully!");
+            SystemMessages.printSuccess("Customer added successfully!\n");
         } catch (SQLException e) {
             e.getStackTrace();
         }
@@ -65,10 +65,8 @@ public class CustomerModification {
         Customer customer = null;
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(query)){
-            while (rs.next()) {
-                if (rs.getInt("customer_id") == customerId) {
-                    customer = getCustomer(rs);
-                }
+            if (rs.getInt("customer_id") == customerId) {
+                customer = getCustomer(rs);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -77,16 +75,17 @@ public class CustomerModification {
     }
 
     // Delete customer by full name
-    public void deleteCustomerByFullName(String firstName, String lastName) {
+    private void deleteCustomerByFullName(String firstName, String lastName) {
         int customerId = findCustomerIdByFullName(firstName, lastName);
-        String query = "DELETE FROM customer WHERE customer_id = " + customerId + ";";
+        String query = "DELETE FROM customer WHERE customer_id = ?;";
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)){
-            int foundCustomer = preparedStatement.executeUpdate();
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setInt(1, customerId);
+            int foundCustomer = pstmt.executeUpdate();
             if (foundCustomer > 0) {
                 SystemMessages.printSuccess("Customer successfully deleted\n");
             } else {
-                SystemMessages.printError("Customer with ID: " + customerId + " could not be found");
+                printErrorFindingCustomerId(customerId);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -97,37 +96,52 @@ public class CustomerModification {
     private void editCustomerByFullName(String firstName, String lastName) {
         int customerId = findCustomerIdByFullName(firstName, lastName);
         Customer customer = getCustomerById(customerId);
-        UI.promptString(); // Scanner bug
-        Customer updatedCustomer = userTypesCustomer();
+        Customer updatedCustomer;
 
-        String query = "UPDATE customer SET first_name =  ?, last_name = ?, address = ?, postal_code = ?, mobile_phone = ?, phone_number = ?, email = ?, license_number = ?, issue_date = ? WHERE customer_id = ?;";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, updatedCustomer.getLastName());
-            preparedStatement.setString(2, updatedCustomer.getAddress());
-            preparedStatement.setInt(3, updatedCustomer.getPostalCode());
-            preparedStatement.setString(4, updatedCustomer.getMobilePhone());
-            preparedStatement.setString(5, updatedCustomer.getPhoneNumber());
-            preparedStatement.setString(6, updatedCustomer.getEmail());
-            preparedStatement.setString(7, updatedCustomer.getLicense_number());
-            preparedStatement.setDate(8, Date.valueOf(updatedCustomer.getIssueDate()));
-            preparedStatement.setInt(9, customerId);
-            int foundCustomer = preparedStatement.executeUpdate();
+        if (customer != null) {
+            UI.promptString(); // Scanner bug
+            updatedCustomer = userTypesCustomer();
+            String query = "UPDATE customer SET first_name =  ?, last_name = ?, address = ?, postal_code = ?, mobile_phone = ?, phone_number = ?, email = ?, license_number = ?, issue_date = ? WHERE customer_id = ?;";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                setPreparedStatementData(preparedStatement, updatedCustomer);
+                preparedStatement.setInt(10, customerId);
 
-            if (foundCustomer > 0) {
-                SystemMessages.printSuccess("Customer successfully edited\n");
-            } else {
-                SystemMessages.printError("Customer with ID: " + customerId + " could not be found");
+                int foundCustomer = preparedStatement.executeUpdate();
+                if (foundCustomer > 0) {
+                    SystemMessages.printSuccess("Customer successfully edited\n");
+                } else {
+                    printErrorFindingCustomerId(customerId);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
+        } else {
+            SystemMessages.printError("Customer does not exist\n");
+            UI.promptString(); // Scanner bug but bad placement
+        }
+    }
+
+    // Set prepared statement data for Customer
+    private void setPreparedStatementData(PreparedStatement pstmt, Customer customer) {
+        try {
+            pstmt.setString(1, customer.getFirstName());
+            pstmt.setString(2, customer.getLastName());
+            pstmt.setString(3, customer.getAddress());
+            pstmt.setInt(4, customer.getPostalCode());
+            pstmt.setString(5, customer.getMobilePhone());
+            pstmt.setString(6, customer.getPhoneNumber());
+            pstmt.setString(7, customer.getEmail());
+            pstmt.setString(8, customer.getLicense_number());
+            pstmt.setDate(9, Date.valueOf(customer.getIssueDate()));
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     // Find customer_id by full name
-    private int findCustomerIdByFullName(String firstName, String lastName) {
+    public int findCustomerIdByFullName(String firstName, String lastName) {
         String query = getQueryFromNameCriteria(firstName, lastName);
         ArrayList<Customer> customersWithGivenName = new ArrayList<>();
-        int chosenId = 0;
 
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(query)){
@@ -137,13 +151,14 @@ public class CustomerModification {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return checkIfListIsEmpty(customersWithGivenName);
+        return getCustomerIdFromList(customersWithGivenName);
     }
 
-    private int checkIfListIsEmpty(ArrayList<Customer> customers) {
+    // Check if list is empty and get Customer ID
+    private int getCustomerIdFromList(ArrayList<Customer> customers) {
         if (!customers.isEmpty()) {
             printCustomers(customers);
-            System.out.print("Choose Customer ID: ");
+            SystemMessages.printYellowText("Select Customer ID: ");
             return UI.promptInt();
         } else {
             return 0;
@@ -153,13 +168,13 @@ public class CustomerModification {
     // Check if user has provided firstName and lastName
     private String getQueryFromNameCriteria(String firstName, String lastName) {
         if (lastName.isEmpty()) {
-            return "SELECT *, pc.city FROM customer JOIN postal_code pc USING postal_code WHERE first_name = '" + firstName + "';";
+            return "SELECT *, pc.city FROM customer JOIN postal_code pc USING (postal_code) WHERE first_name = '" + firstName + "';";
         } else {
-           return "SELECT *, pc.city FROM customer JOIN postal_code pc USING (postal_code) WHERE first_name = '" + firstName + "' AND last_name = '" + lastName + "';";
+            return "SELECT *, pc.city FROM customer JOIN postal_code pc USING (postal_code) WHERE first_name = '" + firstName + "' AND last_name = '" + lastName + "';";
         }
     }
 
-    // Prints out customers
+    // Print out customers
     private void printCustomers(ArrayList<Customer> customers) {
         InfoPrinter infoPrinter = new InfoPrinter();
         for (Customer customer : customers) {
@@ -169,7 +184,7 @@ public class CustomerModification {
 
     // Prompt user for customer information
     private Customer userTypesCustomer() {
-        InputCriteria inputCriteria = new InputCriteria();
+        PostalCodeModification postalCodeModification = new PostalCodeModification(new MySqlConnection());
 
         SystemMessages.printYellowText("First Name: ");
         String firstName = UI.promptString();
@@ -180,9 +195,8 @@ public class CustomerModification {
         SystemMessages.printYellowText("Address: ");
         String address = UI.promptString();
 
-        SystemMessages.printYellowText("Postal Code: ");
-        int postalCode = UI.promptInt();
-        UI.promptString();
+        //Postal code
+        PostalCode postalCode = postalCodeModification.createPostalCode();
 
         SystemMessages.printYellowText("Mobile Phone: ");
         String mobilePhone = UI.promptString();
@@ -196,13 +210,11 @@ public class CustomerModification {
         SystemMessages.printYellowText("License Number: ");
         String licenseNumber = UI.promptString();
 
-        SystemMessages.printYellowText("Issue Date (dd-MM-yyyy): ");
+        SystemMessages.printYellowText("Issue Date (DD-MM-YYYY): ");
         String issueDateString = UI.promptString();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         LocalDate issueDate = LocalDate.parse(issueDateString, formatter);
-        System.out.println();
-
-        return new Customer(firstName, lastName, address, postalCode, mobilePhone, phoneNumber, email, licenseNumber, issueDate);
+        return new Customer(firstName, lastName, address, postalCode.getPostalCode(), mobilePhone, phoneNumber, email, licenseNumber, issueDate);
     }
 
     // Get customer
@@ -214,5 +226,14 @@ public class CustomerModification {
             e.printStackTrace();
         }
         return customer;
+    }
+
+    // Print error finding customer id
+    private void printErrorFindingCustomerId(int customerId) {
+        if (customerId == 0) {
+            SystemMessages.printError("Customer could not be found\n");
+        } else {
+            SystemMessages.printError("Customer with ID: " + customerId + " could not be found\n");
+        }
     }
 }
