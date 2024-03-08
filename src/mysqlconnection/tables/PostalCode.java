@@ -16,12 +16,4 @@ public class PostalCode {
     public String getCity() {
         return city;
     }
-
-    public void setPostalCode(int postalCode) {
-        this.postalCode = postalCode;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
 }

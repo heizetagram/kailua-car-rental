@@ -64,18 +64,4 @@ public class Car {
     public int getMileage() {
         return mileage;
     }
-
-    @Override
-    public String toString() {
-        return "Car{" +
-                "carId=" + carId +
-                ", carModelId=" + modelId +
-                ", carType=" + carType +
-                ", fuelType=" + fuelType +
-                ", registrationNumber='" + registrationNumber + '\'' +
-                ", firstRegistrationDate=" + firstRegistrationDate +
-                ", mileage=" + mileage +
-                '}';
-    }
-
 }
