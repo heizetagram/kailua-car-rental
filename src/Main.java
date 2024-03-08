@@ -7,6 +7,7 @@ import mysqlconnection.datamodification.CustomerModification;
 import mysqlconnection.MySqlConnection;
 import mysqlconnection.datamodification.RentalModification;
 import ui.SystemMessages;
+import ui.UI;
 
 import java.util.Scanner;
 
@@ -38,13 +39,12 @@ public class Main {
     // Run method
     private void run() {
         Menu menu = new Menu();
-        Scanner scanner = new Scanner(System.in);
         int choice;
         do {
             menu.displayMainMenu();
             menu.printEnterChoice(1, 4);
-            choice = scanner.nextInt();
-            scanner.nextLine();
+            choice = UI.promptInt();
+            UI.promptString(); // Scanner bug
 
             switch (choice) {
                 case 1:
@@ -64,9 +64,8 @@ public class Main {
                     SystemRunning.setRunning(false);
                     break;
                 default:
-                    System.out.println("Invalid choice. Please enter a number between 1-4");
+                    SystemMessages.printError("Invalid choice. Please enter a number between 1-4");
             }
-
         } while (SystemRunning.isRunning());
         mySqlConnection.closeConnection();
     }
