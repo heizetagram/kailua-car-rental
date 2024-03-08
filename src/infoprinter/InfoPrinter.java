@@ -22,64 +22,64 @@ public class InfoPrinter {
         System.out.printf("     %sMobile:%s %s%n", ConsoleColors.GREEN, ConsoleColors.RESET, customer.getMobilePhone());
         System.out.printf("     %sPhone:%s %s%n", ConsoleColors.GREEN, ConsoleColors.RESET, customer.getPhoneNumber());
         System.out.printf("     %sE-mail:%s %s%n", ConsoleColors.GREEN, ConsoleColors.RESET, customer.getEmail());
-        System.out.printf("     %sLicense Number:%s %s%n", ConsoleColors.GREEN, ConsoleColors.RESET, customer.getLicense_number());
+        System.out.printf("     %sLicense Number:%s %s%n", ConsoleColors.GREEN, ConsoleColors.RESET, customer.getLicenseNumber());
         System.out.printf("     %sIssue Date:%s %s%n%n", ConsoleColors.GREEN, ConsoleColors.RESET, customer.getIssueDate());
     }
 
     // Print customer with city
     public void printCustomerWithCity(CustomerWithCity customerWithCity) {
-        SystemMessages.printGreenBright("\nCustomer ID: ");
+        SystemMessages.printGreenBrightText("\nCustomer ID: ");
         System.out.print(customerWithCity.getCustomerId() + " - ");
         System.out.print(customerWithCity.getFirstName() + " " + customerWithCity.getLastName() + "\n     ");
-        SystemMessages.printGreen("Address: ");
+        SystemMessages.printGreenText("Address: ");
         System.out.print(customerWithCity.getAddress() + ", " + customerWithCity.getPostalCode() + ", " + customerWithCity.getCity() + "\n     ");
-        SystemMessages.printGreen("Mobile: ");
+        SystemMessages.printGreenText("Mobile: ");
         System.out.print(customerWithCity.getMobilePhone() + "\n     ");
-        SystemMessages.printGreen("Phone:  ");
+        SystemMessages.printGreenText("Phone:  ");
         System.out.print(customerWithCity.getPhoneNumber() + "\n     ");
-        SystemMessages.printGreen("E-mail: ");
+        SystemMessages.printGreenText("E-mail: ");
         System.out.print(customerWithCity.getEmail() + "\n     ");
-        SystemMessages.printGreen("License Number: ");
+        SystemMessages.printGreenText("License Number: ");
         System.out.print(customerWithCity.getLicenseNumber() + "\n     ");
-        SystemMessages.printGreen("License Issue Date: ");
+        SystemMessages.printGreenText("License Issue Date: ");
         System.out.print(customerWithCity.getIssueDate() + "\n");
     }
 
     // Print car with full info
     public void printFullCarInfo(CarWithCarModel fullCar) {
-        SystemMessages.printGreenBright("\nCar ID: ");
+        SystemMessages.printGreenBrightText("\nCar ID: ");
         System.out.print(fullCar.getCarId() + " - ");
         System.out.print(fullCar.getBrand() + ", " + fullCar.getModel() + "\n     ");
-        SystemMessages.printGreen("Fuel type: ");
+        SystemMessages.printGreenText("Fuel type: ");
         System.out.print(fullCar.getFuelType() + "\n     ");
-        SystemMessages.printGreen("Car type: ");
+        SystemMessages.printGreenText("Car type: ");
         System.out.print(fullCar.getCarType() + "\n     ");
-        SystemMessages.printGreen("Registration number: ");
+        SystemMessages.printGreenText("Registration number: ");
         System.out.print(fullCar.getRegistrationNumber() + "\n     ");
-        SystemMessages.printGreen("First registration date: ");
+        SystemMessages.printGreenText("First registration date: ");
         System.out.print(fullCar.getFirstRegistrationDate() + "\n     ");
-        SystemMessages.printGreen("Mileage: ");
+        SystemMessages.printGreenText("Mileage: ");
         System.out.print(fullCar.getMileage() + " km\n");
     }
 
     // Print rental with full info
     public void printRentalFullInfo(RentalWithFullInfo rentalFullInfo) { // CONTINUE HERE
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy, HH:mm");
-        SystemMessages.printGreenBright("\nRental ID: ");
+        SystemMessages.printGreenBrightText("\nRental ID: ");
         System.out.print(rentalFullInfo.getRentalId() + "\n     ");
-        SystemMessages.printGreen("Customer ID: ");
+        SystemMessages.printGreenText("Customer ID: ");
         System.out.print(rentalFullInfo.getCustomerId() + " - " + rentalFullInfo.getFirstName() + ", " + rentalFullInfo.getLastName() + "\n     ");
-        SystemMessages.printGreen("Car ID: ");
+        SystemMessages.printGreenText("Car ID: ");
         System.out.print(rentalFullInfo.getCarId() + " - " + rentalFullInfo.getBrand() +  ", " + rentalFullInfo.getModel() + "\n     ");
-        SystemMessages.printGreen("Registration number: ");
+        SystemMessages.printGreenText("Registration number: ");
         System.out.print(rentalFullInfo.getRegistrationNumber() + "\n     ");
-        SystemMessages.printGreen("Rented from: ");
+        SystemMessages.printGreenText("Rented from: ");
         System.out.print(rentalFullInfo.getFromDate().format(formatter) + "\n     ");
-        SystemMessages.printGreen("Rented until: ");
+        SystemMessages.printGreenText("Rented until: ");
         System.out.print(rentalFullInfo.getToDate().format(formatter) + "\n     ");
-        SystemMessages.printGreen("Max km: ");
+        SystemMessages.printGreenText("Max km: ");
         System.out.print(rentalFullInfo.getMaxKm() + "\n     ");
-        SystemMessages.printGreen("Current km: ");
+        SystemMessages.printGreenText("Current km: ");
         System.out.print(rentalFullInfo.getCurrentKm() + "\n     ");
     }
 }
