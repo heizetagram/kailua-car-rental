@@ -12,19 +12,19 @@ import java.sql.*;
  */
 
 public class CarModelModification {
-    private MySqlConnection mySqlConnection;
     private Connection connection;
 
     public CarModelModification(MySqlConnection mySqlConnection) {
-        this.mySqlConnection = mySqlConnection;
         connection = mySqlConnection.getConnection();
     }
 
+    // Create car model
     public CarModel createCarModel() {
         CarModel carModel = userTypesCarModel();
         return checkIfCarModelExists(carModel);
     }
 
+    // User types car model
     private CarModel userTypesCarModel() {
         SystemMessages.printYellowText("Brand: ");
         String brand = UI.promptString();
@@ -35,6 +35,7 @@ public class CarModelModification {
         return new CarModel(brand, model);
     }
 
+    // Insert car model into database
     private void insertCarModelIntoDatabase(CarModel carModel) {
         try {
             String query = "INSERT INTO car_model (brand, model) VALUES (?, ?);";
@@ -42,12 +43,12 @@ public class CarModelModification {
             pstmt.setString(1, carModel.getBrand());
             pstmt.setString(2, carModel.getModel());
             pstmt.executeUpdate();
-            System.out.println(carModel.getModelId() + ",  " + carModel.getModel() + ", " + carModel.getBrand());
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+    // Get car model by brand and name
     private CarModel getCarModelByBrandAndName(String brand, String model) {
         String query = "SELECT * FROM car_model WHERE brand = '" + brand + "' AND model = '" + model +"';";
         CarModel carModel  = null;
@@ -62,22 +63,7 @@ public class CarModelModification {
         return carModel;
     }
 
-    /*
-    public CarModel getCarModelById(int model_id) {
-        CarModel carModel = null;
-        String query = "SELECT * FROM car_model WHERE model_id = " + carModel.getModelId() + ";";
-        try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
-            while (rs.next()) {
-                carModel = new CarModel(rs.getString("brand"), rs.getString("model"));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return carModel;
-    }
-     */
-
+    // Check if car model exists
     private CarModel checkIfCarModelExists(CarModel carModel) {
         String query = "SELECT * FROM car_model WHERE brand = '" + carModel.getBrand() + "' AND model = '" + carModel.getModel() + "';";
         CarModel updatedCarModel = null;
@@ -98,6 +84,7 @@ public class CarModelModification {
         return updatedCarModel;
     }
 
+    // Get car model
     private CarModel getCarModel(ResultSet rs) {
         CarModel carModel = null;
         try {
