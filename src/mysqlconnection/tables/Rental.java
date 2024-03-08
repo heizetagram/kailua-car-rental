@@ -57,32 +57,4 @@ public class Rental {
     public int getCurrentKm() {
         return currentKm;
     }
-
-    public void setRentalId(int rentalId) {
-        this.rentalId = rentalId;
-    }
-
-    public void setCustomerId(int customerId) {
-        this.customerId = customerId;
-    }
-
-    public void setCarId(int carId) {
-        this.carId = carId;
-    }
-
-    public void setFromDate(LocalDateTime fromDate) {
-        this.fromDate = fromDate;
-    }
-
-    public void setToDate(LocalDateTime toDate) {
-        this.toDate = toDate;
-    }
-
-    public void setMaxKm(int maxKm) {
-        this.maxKm = maxKm;
-    }
-
-    public void setCurrentKm(int currentKm) {
-        this.currentKm = currentKm;
-    }
 }

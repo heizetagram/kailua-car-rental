@@ -9,10 +9,6 @@ public class PostalCode {
         this.city = city;
     }
 
-    public PostalCode(String city) {
-        this.city = city;
-    }
-
     public int getPostalCode() {
         return postalCode;
     }

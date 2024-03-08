@@ -9,8 +9,8 @@ import java.time.LocalDate;
 public class Car {
     private int carId;
     private int modelId;
-    private CarType carType;
     private FuelType fuelType;
+    private CarType carType;
     private String registrationNumber;
     private LocalDate firstRegistrationDate;
     private int mileage;
@@ -63,34 +63,6 @@ public class Car {
 
     public int getMileage() {
         return mileage;
-    }
-
-    public void setCarId(int carId) {
-        this.carId = carId;
-    }
-
-    public void setModelId(int ModelId) {
-        this.modelId = modelId;
-    }
-
-    public void setCarType(CarType carType) {
-        this.carType = carType;
-    }
-
-    public void setFuelType(FuelType fuelType) {
-        this.fuelType = fuelType;
-    }
-
-    public void setRegistrationNumber(String registrationNumber) {
-        this.registrationNumber = registrationNumber;
-    }
-
-    public void setFirstRegistrationDate(LocalDate firstRegistrationDate) {
-        this.firstRegistrationDate = firstRegistrationDate;
-    }
-
-    public void setMileage(int mileage) {
-        this.mileage = mileage;
     }
 
     @Override
